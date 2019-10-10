@@ -1,7 +1,7 @@
 package com.transamerica.user.auth.service;
 
-import java.util.Set;
+import java.util.List;
 
 public interface ICommonWordFinderService {
-	Set<String> findCommandWord(String filesPath);
+	List<String> findCommandWord(String filesPath);
 }
