@@ -31,8 +31,11 @@ public  class FileReaderWriter implements IFileReaderWrite{
 			while ((line = bufferedReader.readLine()) != null) {
 
 				splitLine = line.split(" ");
-				for (String word : splitLine)
+				for (String word : splitLine){
+					word=word.trim();
+					if(word.length()>1)
 					hs.add(word);
+				}
 			}
 
 			// Always close files.

@@ -1,9 +1,8 @@
 package com.transamerica.user.auth.serviceImpl;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -25,10 +24,11 @@ public class CommonWordFinderServiceImpl implements ICommonWordFinderService {
 	private CompareFilesData compareRun = null;
 
 	ExecutorService executor = Executors.newFixedThreadPool(5);
+	CountDownLatch countDown=new CountDownLatch(2);
 
 	@Override
 	public List<String> findCommandWord(String filesPath) {
-		ConcurrentHashMap<String, Boolean> map = new ConcurrentHashMap<>();
+		ConcurrentSkipListMap <String, Boolean> map = new ConcurrentSkipListMap <>(String.CASE_INSENSITIVE_ORDER);
 		String[] splitPath = filesPath.split(" ");
 		List<String> primaryData = fileReaderWriter.read(splitPath[0], null);
 
@@ -36,18 +36,20 @@ public class CommonWordFinderServiceImpl implements ICommonWordFinderService {
 			map.put(s, true);
 		});
 
-		for (String s : splitPath) {
+		for (int i=1;i<splitPath.length;i++) {
 			try {
-			Future<Boolean> future = executor.submit(new CompareFilesData(null,s,map));
+		   Future<Boolean> submit = executor.submit(new CompareFilesData(null,splitPath[i],map,fileReaderWriter));
+		   submit.get();
 			
-				future.get();
-			} catch (InterruptedException | ExecutionException e) {
+				
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-
-		List<String> result = map.keySet().stream().collect(Collectors.toList());
+		
+		List<String> result = map.keySet().stream()
+				.collect(Collectors.toList());
 		return result;
 	}
 

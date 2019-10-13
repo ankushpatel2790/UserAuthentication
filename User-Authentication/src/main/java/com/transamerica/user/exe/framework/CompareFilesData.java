@@ -2,23 +2,27 @@ package com.transamerica.user.exe.framework;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import com.transamerica.user.file.readerwriter.IFileReaderWrite;
 
 public class CompareFilesData implements Callable<Boolean> {
-	private ConcurrentHashMap<String, Boolean> wordSet;
+	private ConcurrentSkipListMap <String, Boolean> wordSet;
 	private String filePath;
 	private String fileName;
-	@Autowired
+
+	public CompareFilesData() {
+		super();
+	}
+
 	private IFileReaderWrite fileReaderWriter;
 
-	public CompareFilesData(String fileName,String filePath, ConcurrentHashMap<String, Boolean> wordSet) {
+	public CompareFilesData(String fileName, String filePath, ConcurrentSkipListMap <String, Boolean> wordSet,
+			IFileReaderWrite fileReaderWriter) {
 		this.filePath = filePath;
 		this.fileName = fileName;
 		this.wordSet = wordSet;
+		this.fileReaderWriter = fileReaderWriter;
 	}
 
 	@Override
@@ -26,7 +30,7 @@ public class CompareFilesData implements Callable<Boolean> {
 		List<String> tempWords = fileReaderWriter.read(filePath, fileName);
 		wordSet.forEach((K, V) -> {
 			if (!tempWords.contains(K)) {
-				wordSet.put(K, false);
+				wordSet.remove(K);
 			}
 		});
 		return true;

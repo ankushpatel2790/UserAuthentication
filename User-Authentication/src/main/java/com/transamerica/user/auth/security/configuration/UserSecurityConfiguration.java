@@ -1,4 +1,4 @@
-package com.transamerica.user.auth.security.configuration;
+/*package com.transamerica.user.auth.security.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,3 +11,4 @@ import org.springframework.stereotype.Component;
 public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter{
 
 }
+*/
